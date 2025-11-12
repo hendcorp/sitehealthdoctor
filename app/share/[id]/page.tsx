@@ -114,6 +114,7 @@ function SharePageContent({ id }: { id: string }) {
             </div>
             <div className="flex-1 overflow-y-auto">
               <div className="h-full bg-white dark:bg-gray-900 p-8">
+                <div className="max-w-4xl mx-auto">
                   {activeSection === 'summary' && (
                     <div>
                       <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Health Summary</h2>
@@ -234,6 +235,8 @@ function SharePageContent({ id }: { id: string }) {
                   </div>
                 </div>
               )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
