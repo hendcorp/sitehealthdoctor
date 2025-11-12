@@ -2,10 +2,9 @@
 
 import { useState } from 'react'
 import { parseSiteHealth, stripSensitiveData, SiteHealthData } from '@/lib/parser'
-import { DataDisplay } from '@/components/DataDisplay'
 import { DarkModeToggle } from '@/components/DarkModeToggle'
-import { CollapsibleSection } from '@/components/CollapsibleSection'
 import { SummaryPanelContent } from '@/components/SummaryPanel'
+import { Sidebar } from '@/components/Sidebar'
 
 export default function Home() {
   const [rawInput, setRawInput] = useState('')
@@ -14,6 +13,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [shareLink, setShareLink] = useState<string | null>(null)
   const [stripSensitive, setStripSensitive] = useState(true)
+  const [activeSection, setActiveSection] = useState('summary')
 
   const handleParse = () => {
     if (!rawInput.trim()) {
@@ -173,111 +173,132 @@ export default function Home() {
               </div>
             )}
 
-            <div className="space-y-3">
-              <CollapsibleSection title="Health Summary" icon="📊" defaultOpen={false}>
-                <SummaryPanelContent data={parsedData.summary} />
-              </CollapsibleSection>
-              
-              <div className="columns-1 md:columns-2 gap-3 space-y-3">
-                <div className="break-inside-avoid">
-                <CollapsibleSection title="WordPress Environment" icon="📝" defaultOpen={false}>
-                  <div className="space-y-2">
-                    {Object.entries(parsedData.wordpress).map(([key, value]) => (
-                      <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                        <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
-                        <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
-                      </div>
-                    ))}
-                  </div>
-                </CollapsibleSection>
+            <div className="flex h-[calc(100vh-200px)]">
+              <div className="w-1/4 min-w-[200px]">
+                <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
               </div>
-              <div className="break-inside-avoid">
-                <CollapsibleSection title="Server Environment" icon="🖥️" defaultOpen={false}>
-                  <div className="space-y-2">
-                    {Object.entries(parsedData.server).map(([key, value]) => (
-                      <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                        <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
-                        <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+              <div className="w-3/4 overflow-y-auto p-6">
+                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                  {activeSection === 'summary' && (
+                    <div>
+                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Health Summary</h2>
+                      <div className="max-h-[500px] overflow-y-auto">
+                        <SummaryPanelContent data={parsedData.summary} />
                       </div>
-                    ))}
-                  </div>
-                </CollapsibleSection>
-              </div>
-              <div className="break-inside-avoid">
-                <CollapsibleSection title="Active Theme" icon="🎨" defaultOpen={false}>
-                  <div className="space-y-2">
-                    {Object.entries(parsedData.theme).map(([key, value]) => (
-                      <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                        <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
-                        <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
-                      </div>
-                    ))}
-                  </div>
-                </CollapsibleSection>
-              </div>
-              <div className="break-inside-avoid">
-                <CollapsibleSection title={`Active Plugins (${parsedData.plugins.length})`} icon="🔌" defaultOpen={false}>
-                  <div className="space-y-2">
-                    {parsedData.plugins.map((plugin, index) => (
-                      <div
-                        key={index}
-                        className="p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600"
-                      >
-                        <div className="text-xs font-medium text-gray-900 dark:text-gray-100 mb-1.5">
-                          {plugin.name}
-                        </div>
-                        <div className="grid grid-cols-1 gap-1 text-xs">
-                          <div>
-                            <span className="text-gray-500 dark:text-gray-400">Version: </span>
-                            <span className="text-gray-900 dark:text-gray-100">{plugin.version}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-500 dark:text-gray-400">Author: </span>
-                            <span className="text-gray-900 dark:text-gray-100">{plugin.author}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CollapsibleSection>
-              </div>
-              <div className="break-inside-avoid">
-                <CollapsibleSection title="Database" icon="💾" defaultOpen={false}>
-                  <div className="space-y-2">
-                    {Object.entries(parsedData.database).map(([key, value]) => (
-                      <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                        <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
-                        <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
-                      </div>
-                    ))}
-                  </div>
-                </CollapsibleSection>
-              </div>
-              <div className="break-inside-avoid">
-                <CollapsibleSection title="Raw Site Health" icon="📄" defaultOpen={false}>
-                  <div className="space-y-2">
-                    <div className="flex justify-end">
-                      <button
-                        onClick={async () => {
-                          try {
-                            await navigator.clipboard.writeText(rawInput)
-                            alert('Raw data copied to clipboard!')
-                          } catch (err) {
-                            console.error('Failed to copy:', err)
-                          }
-                        }}
-                        className="px-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
-                      >
-                        Copy Raw Data
-                      </button>
                     </div>
-                    <div className="bg-gray-50 dark:bg-gray-900/50 rounded p-3 border border-gray-200 dark:border-gray-700 max-h-[400px] overflow-y-auto">
-                      <pre className="text-xs text-gray-800 dark:text-gray-200 font-mono whitespace-pre-wrap break-words leading-relaxed">
-                        {rawInput}
-                      </pre>
+                  )}
+                  
+                  {activeSection === 'wordpress' && (
+                    <div>
+                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">WordPress Environment</h2>
+                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                        {Object.entries(parsedData.wordpress).map(([key, value]) => (
+                          <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </CollapsibleSection>
+                  )}
+                  
+                  {activeSection === 'server' && (
+                    <div>
+                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Server Environment</h2>
+                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                        {Object.entries(parsedData.server).map(([key, value]) => (
+                          <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {activeSection === 'theme' && (
+                    <div>
+                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Active Theme</h2>
+                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                        {Object.entries(parsedData.theme).map(([key, value]) => (
+                          <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {activeSection === 'plugins' && (
+                    <div>
+                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Active Plugins ({parsedData.plugins.length})</h2>
+                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                        {parsedData.plugins.map((plugin, index) => (
+                          <div
+                            key={index}
+                            className="p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600"
+                          >
+                            <div className="text-xs font-medium text-gray-900 dark:text-gray-100 mb-1.5">
+                              {plugin.name}
+                            </div>
+                            <div className="grid grid-cols-1 gap-1 text-xs">
+                              <div>
+                                <span className="text-gray-500 dark:text-gray-400">Version: </span>
+                                <span className="text-gray-900 dark:text-gray-100">{plugin.version}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-500 dark:text-gray-400">Author: </span>
+                                <span className="text-gray-900 dark:text-gray-100">{plugin.author}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {activeSection === 'database' && (
+                    <div>
+                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Database</h2>
+                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                        {Object.entries(parsedData.database).map(([key, value]) => (
+                          <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {activeSection === 'raw' && (
+                    <div>
+                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Raw Site Health</h2>
+                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                        <div className="flex justify-end mb-2">
+                          <button
+                            onClick={async () => {
+                              try {
+                                await navigator.clipboard.writeText(rawInput)
+                                alert('Raw data copied to clipboard!')
+                              } catch (err) {
+                                console.error('Failed to copy:', err)
+                              }
+                            }}
+                            className="px-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                          >
+                            Copy Raw Data
+                          </button>
+                        </div>
+                        <div className="bg-gray-50 dark:bg-gray-900/50 rounded p-3 border border-gray-200 dark:border-gray-700">
+                          <pre className="text-xs text-gray-800 dark:text-gray-200 font-mono whitespace-pre-wrap break-words leading-relaxed">
+                            {rawInput}
+                          </pre>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
