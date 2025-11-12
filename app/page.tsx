@@ -83,26 +83,21 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
+        <div className="max-w-full mx-auto px-6 py-3">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                Site Health Doctor
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Simple, modern WordPress Site Health viewer
-              </p>
-            </div>
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Site Health Doctor
+            </h1>
             <DarkModeToggle />
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="h-[calc(100vh-64px)] overflow-hidden">
         {!parsedData ? (
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+          <div className="h-full flex items-center justify-center p-8">
+            <div className="max-w-2xl w-full bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-8">
               <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
                 Paste Site Health Info
               </h2>
@@ -129,8 +124,8 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <div>
-            <div className="flex items-center justify-between mb-6">
+          <div className="h-full flex flex-col">
+            <div className="flex items-center justify-between px-8 pt-6 pb-4 border-b border-gray-200 dark:border-gray-800">
               <button
                 onClick={() => {
                   setParsedData(null)
@@ -162,45 +157,48 @@ export default function Home() {
               </div>
             </div>
 
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <span className="text-red-600 dark:text-red-400">❌</span>
-                  <span className="font-medium text-red-900 dark:text-red-100">
-                    {error}
-                  </span>
-                </div>
+            {(error || shareLink) && (
+              <div className="px-8 py-4 border-b border-gray-200 dark:border-gray-800">
+                {error && (
+                  <div className="mb-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <span className="text-red-600 dark:text-red-400">❌</span>
+                      <span className="text-sm font-medium text-red-900 dark:text-red-100">
+                        {error}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {shareLink && (
+                  <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-green-600 dark:text-green-400">✅</span>
+                      <span className="text-sm font-medium text-green-900 dark:text-green-100">
+                        Share link generated and copied to clipboard!
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      value={shareLink}
+                      readOnly
+                      className="w-full p-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-700 rounded text-sm text-gray-900 dark:text-gray-100"
+                      onClick={(e) => e.currentTarget.select()}
+                    />
+                  </div>
+                )}
               </div>
             )}
 
-            {shareLink && (
-              <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-green-600 dark:text-green-400">✅</span>
-                  <span className="font-medium text-green-900 dark:text-green-100">
-                    Share link generated and copied to clipboard!
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  value={shareLink}
-                  readOnly
-                  className="w-full p-2 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-700 rounded text-sm text-gray-900 dark:text-gray-100"
-                  onClick={(e) => e.currentTarget.select()}
-                />
-              </div>
-            )}
-
-            <div className="flex h-[calc(100vh-200px)]">
-              <div className="w-1/4 min-w-[200px]">
+            <div className="flex h-[calc(100vh-120px)]">
+              <div className="w-64 flex-shrink-0">
                 <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
               </div>
-              <div className="w-3/4 overflow-y-auto p-6">
-                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+              <div className="flex-1 overflow-y-auto">
+                <div className="h-full bg-white dark:bg-gray-900 p-8">
                   {activeSection === 'summary' && (
                     <div>
-                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Health Summary</h2>
-                      <div className="max-h-[500px] overflow-y-auto">
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Health Summary</h2>
+                      <div className="overflow-y-auto">
                         <SummaryPanelContent data={parsedData.summary} />
                       </div>
                     </div>
@@ -208,8 +206,8 @@ export default function Home() {
                   
                   {activeSection === 'wordpress' && (
                     <div>
-                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">WordPress Environment</h2>
-                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">WordPress Environment</h2>
+                      <div className="space-y-2 overflow-y-auto">
                         {Object.entries(parsedData.wordpress).map(([key, value]) => (
                           <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
                             <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
@@ -222,8 +220,8 @@ export default function Home() {
                   
                   {activeSection === 'server' && (
                     <div>
-                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Server Environment</h2>
-                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Server Environment</h2>
+                      <div className="space-y-2 overflow-y-auto">
                         {Object.entries(parsedData.server).map(([key, value]) => (
                           <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
                             <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
@@ -236,8 +234,8 @@ export default function Home() {
                   
                   {activeSection === 'theme' && (
                     <div>
-                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Active Theme</h2>
-                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Active Theme</h2>
+                      <div className="space-y-2 overflow-y-auto">
                         {Object.entries(parsedData.theme).map(([key, value]) => (
                           <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
                             <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
@@ -250,8 +248,8 @@ export default function Home() {
                   
                   {activeSection === 'plugins' && (
                     <div>
-                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Active Plugins ({parsedData.plugins.length})</h2>
-                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Active Plugins ({parsedData.plugins.length})</h2>
+                      <div className="space-y-2 overflow-y-auto">
                         {parsedData.plugins.map((plugin, index) => (
                           <div
                             key={index}
@@ -278,8 +276,8 @@ export default function Home() {
                   
                   {activeSection === 'database' && (
                     <div>
-                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Database</h2>
-                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Database</h2>
+                      <div className="space-y-2 overflow-y-auto">
                         {Object.entries(parsedData.database).map(([key, value]) => (
                           <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
                             <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
@@ -292,8 +290,8 @@ export default function Home() {
                   
                   {activeSection === 'raw' && (
                     <div>
-                      <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Raw Site Health</h2>
-                      <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Raw Site Health</h2>
+                      <div className="space-y-2 overflow-y-auto">
                         <div className="flex justify-end mb-2">
                           <button
                             onClick={async () => {
@@ -324,11 +322,6 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="mt-16 py-8 border-t border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-600 dark:text-gray-400">
-          Made for support teams who care about clarity
-        </div>
-      </footer>
     </div>
   )
 }

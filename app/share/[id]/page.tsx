@@ -45,10 +45,10 @@ function SharePageContent({ id }: { id: string }) {
   if (error) {
     return (
       <div className="min-h-screen">
-        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
+          <div className="max-w-full mx-auto px-6 py-3">
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Site Health Doctor
               </h1>
               <DarkModeToggle />
@@ -86,21 +86,16 @@ function SharePageContent({ id }: { id: string }) {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
+        <div className="max-w-full mx-auto px-6 py-3">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                Site Health Report
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Shared report
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Site Health Report
+            </h1>
+            <div className="flex items-center gap-3">
               <Link
                 href="/"
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
               >
                 Create New
               </Link>
@@ -110,26 +105,26 @@ function SharePageContent({ id }: { id: string }) {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex h-[calc(100vh-200px)]">
-          <div className="w-1/4 min-w-[200px]">
-            <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
-          </div>
-          <div className="w-3/4 overflow-y-auto p-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-              {activeSection === 'summary' && (
-                <div>
-                  <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Health Summary</h2>
-                  <div className="max-h-[500px] overflow-y-auto">
-                    <SummaryPanelContent data={parsedData.summary} />
-                  </div>
-                </div>
-              )}
+        <main className="h-[calc(100vh-64px)] overflow-hidden">
+          <div className="flex h-full">
+            <div className="w-64 flex-shrink-0">
+              <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <div className="h-full bg-white dark:bg-gray-900 p-8">
+                  {activeSection === 'summary' && (
+                    <div>
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Health Summary</h2>
+                      <div className="overflow-y-auto">
+                        <SummaryPanelContent data={parsedData.summary} />
+                      </div>
+                    </div>
+                  )}
               
               {activeSection === 'wordpress' && (
                 <div>
-                  <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">WordPress Environment</h2>
-                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">WordPress Environment</h2>
+                      <div className="space-y-2 overflow-y-auto">
                     {Object.entries(parsedData.wordpress).map(([key, value]) => (
                       <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
                         <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
@@ -142,8 +137,8 @@ function SharePageContent({ id }: { id: string }) {
               
               {activeSection === 'server' && (
                 <div>
-                  <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Server Environment</h2>
-                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Server Environment</h2>
+                      <div className="space-y-2 overflow-y-auto">
                     {Object.entries(parsedData.server).map(([key, value]) => (
                       <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
                         <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
@@ -156,8 +151,8 @@ function SharePageContent({ id }: { id: string }) {
               
               {activeSection === 'theme' && (
                 <div>
-                  <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Active Theme</h2>
-                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Active Theme</h2>
+                      <div className="space-y-2 overflow-y-auto">
                     {Object.entries(parsedData.theme).map(([key, value]) => (
                       <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
                         <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
@@ -170,8 +165,8 @@ function SharePageContent({ id }: { id: string }) {
               
               {activeSection === 'plugins' && (
                 <div>
-                  <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Active Plugins ({parsedData.plugins.length})</h2>
-                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Active Plugins ({parsedData.plugins.length})</h2>
+                      <div className="space-y-2 overflow-y-auto">
                     {parsedData.plugins.map((plugin, index) => (
                       <div
                         key={index}
@@ -198,8 +193,8 @@ function SharePageContent({ id }: { id: string }) {
               
               {activeSection === 'database' && (
                 <div>
-                  <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Database</h2>
-                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Database</h2>
+                      <div className="space-y-2 overflow-y-auto">
                     {Object.entries(parsedData.database).map(([key, value]) => (
                       <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
                         <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
@@ -214,11 +209,6 @@ function SharePageContent({ id }: { id: string }) {
         </div>
       </main>
 
-      <footer className="mt-16 py-8 border-t border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-600 dark:text-gray-400">
-          Made for support teams who care about clarity
-        </div>
-      </footer>
     </div>
   )
 }
