@@ -55,7 +55,7 @@ npm start
 - **Next.js 14** (App Router)
 - **TypeScript**
 - **Tailwind CSS**
-- **File-based JSON storage** (for MVP - can be upgraded to database)
+- **Vercel KV** (Redis) for persistent storage
 
 ## Project Structure
 
@@ -74,17 +74,28 @@ npm start
 │   └── ThemeProvider.tsx
 ├── lib/
 │   ├── parser.ts           # WordPress Site Health parser
-│   └── store.ts            # Data storage utilities
-└── data/                   # JSON file storage (created at runtime)
+│   └── store.ts            # Data storage utilities (Vercel KV)
 ```
 
 ## Data Storage
 
-By default, reports are stored in a JSON file at `data/reports.json`. For production, consider upgrading to:
-- Supabase
-- Firebase
-- PostgreSQL
-- MongoDB
+This application uses **Vercel KV** (Redis) for persistent storage of shared reports. This ensures data persists across serverless function invocations.
+
+### Setting up Vercel KV
+
+1. Go to your Vercel project dashboard
+2. Navigate to **Storage** → **Create Database** → **KV**
+3. Create a new KV database (or use an existing one)
+4. The environment variables (`KV_URL`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `KV_REST_API_READ_ONLY_TOKEN`) will be automatically added to your project
+
+For local development, create a `.env.local` file with:
+```
+KV_REST_API_URL=your_kv_url
+KV_REST_API_TOKEN=your_kv_token
+KV_REST_API_READ_ONLY_TOKEN=your_readonly_token
+```
+
+**Note**: Vercel KV automatically provides these environment variables in production. You only need to set them locally if testing the storage functionality.
 
 ## License
 
