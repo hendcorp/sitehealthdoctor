@@ -5,6 +5,7 @@ import { parseSiteHealth, stripSensitiveData, SiteHealthData } from '@/lib/parse
 import { SummaryPanel } from '@/components/SummaryPanel'
 import { DataDisplay } from '@/components/DataDisplay'
 import { DarkModeToggle } from '@/components/DarkModeToggle'
+import { CollapsibleSection } from '@/components/CollapsibleSection'
 
 export default function Home() {
   const [rawInput, setRawInput] = useState('')
@@ -174,6 +175,31 @@ export default function Home() {
 
             <SummaryPanel data={parsedData.summary} />
             <DataDisplay data={parsedData} />
+            
+            <CollapsibleSection title="Raw Site Health" icon="📄">
+              <div className="space-y-3">
+                <div className="flex justify-end">
+                  <button
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(rawInput)
+                        alert('Raw data copied to clipboard!')
+                      } catch (err) {
+                        console.error('Failed to copy:', err)
+                      }
+                    }}
+                    className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+                  >
+                    Copy Raw Data
+                  </button>
+                </div>
+                <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700 max-h-[600px] overflow-y-auto">
+                  <pre className="text-sm text-gray-800 dark:text-gray-200 font-mono whitespace-pre-wrap break-words leading-relaxed">
+                    {rawInput}
+                  </pre>
+                </div>
+              </div>
+            </CollapsibleSection>
           </div>
         )}
       </main>
