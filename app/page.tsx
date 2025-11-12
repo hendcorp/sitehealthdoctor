@@ -176,7 +176,8 @@ export default function Home() {
             <SummaryPanel data={parsedData.summary} />
             <DataDisplay data={parsedData} />
             
-            <CollapsibleSection title="Raw Site Health" icon="📄">
+            <div className="mt-8">
+              <CollapsibleSection title="Raw Site Health" icon="📄">
               <div className="space-y-3">
                 <div className="flex justify-end">
                   <button
@@ -199,7 +200,8 @@ export default function Home() {
                   </pre>
                 </div>
               </div>
-            </CollapsibleSection>
+              </CollapsibleSection>
+            </div>
           </div>
         )}
       </main>

@@ -71,10 +71,6 @@ export function DataDisplay({ data }: DataDisplayProps) {
       <CollapsibleSection title="Database" icon="💾">
         {renderKeyValue(data.database)}
       </CollapsibleSection>
-
-      <CollapsibleSection title="Cron" icon="⏰">
-        {renderKeyValue(data.cron)}
-      </CollapsibleSection>
     </div>
   )
 }
