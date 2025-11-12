@@ -5,6 +5,8 @@ import { DataDisplay } from '@/components/DataDisplay'
 import { DarkModeToggle } from '@/components/DarkModeToggle'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default async function SharePage({ params }: { params: { id: string } }) {
   const report = await getReport(params.id)
 
