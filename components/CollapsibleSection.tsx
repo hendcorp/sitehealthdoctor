@@ -42,7 +42,7 @@ export function CollapsibleSection({
       </button>
       {isOpen && (
         <div className="px-4 pb-4 border-t border-gray-100 dark:border-gray-700">
-          <div className="pt-3">
+          <div className="pt-3 max-h-[500px] overflow-y-auto">
             {children}
           </div>
         </div>
