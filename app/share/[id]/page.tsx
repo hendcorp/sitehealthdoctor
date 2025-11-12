@@ -87,9 +87,9 @@ function SharePageContent({ id }: { id: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="bg-white dark:bg-gray-900 shadow-lg rounded-lg overflow-hidden flex flex-col h-[calc(100vh-2rem)]">
+    <div className="min-h-screen bg-gray-200 dark:bg-gray-950 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="bg-white dark:bg-gray-900 shadow-2xl rounded-2xl overflow-hidden flex flex-col min-h-[calc(100vh-4rem)]">
           <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
             <div className="px-6 py-3">
               <div className="flex items-center justify-between">
