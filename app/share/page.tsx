@@ -1,15 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useEffect, useState, Suspense } from 'react'
 import { SiteHealthData } from '@/lib/parser'
 import { SummaryPanelContent } from '@/components/SummaryPanel'
 import { DarkModeToggle } from '@/components/DarkModeToggle'
 import { Sidebar } from '@/components/Sidebar'
 import Link from 'next/link'
 
-export default function SharePage() {
-  const searchParams = useSearchParams()
+function SharePageContent() {
   const [parsedData, setParsedData] = useState<SiteHealthData | null>(null)
   const [activeSection, setActiveSection] = useState('summary')
   const [error, setError] = useState<string | null>(null)
@@ -211,6 +209,21 @@ export default function SharePage() {
         </div>
       </footer>
     </div>
+  )
+}
+
+export default function SharePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    }>
+      <SharePageContent />
+    </Suspense>
   )
 }
 
