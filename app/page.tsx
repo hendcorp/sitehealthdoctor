@@ -173,7 +173,7 @@ export default function Home() {
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start" style={{ gridAutoRows: 'min-content' }}>
               <CollapsibleSection title="Health Summary" icon="📊" defaultOpen={false}>
                 <SummaryPanelContent data={parsedData.summary} />
               </CollapsibleSection>
