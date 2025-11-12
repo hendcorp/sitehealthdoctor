@@ -42,7 +42,7 @@ export function SummaryPanel({ data }: SummaryPanelProps) {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
         Health Summary
       </h2>
