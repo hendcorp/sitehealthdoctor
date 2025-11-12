@@ -12,78 +12,35 @@ function SharePageContent({ id }: { id: string }) {
   const [activeSection, setActiveSection] = useState('summary')
   const [error, setError] = useState<string | null>(null)
 
-  const decompressAndDecode = async (encoded: string): Promise<SiteHealthData> => {
-    try {
-      // Try to decompress if it's gzip compressed
-      if (typeof DecompressionStream !== 'undefined') {
-        try {
-          const binaryString = atob(encoded)
-          const bytes = new Uint8Array(binaryString.length)
-          for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i)
-          }
-          
-          const stream = new DecompressionStream('gzip')
-          const writer = stream.writable.getWriter()
-          const reader = stream.readable.getReader()
-          
-          writer.write(bytes)
-          writer.close()
-          
-          const chunks: Uint8Array[] = []
-          let done = false
-          
-          while (!done) {
-            const { value, done: readerDone } = await reader.read()
-            done = readerDone
-            if (value) chunks.push(value)
-          }
-          
-          const decompressed = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0))
-          let offset = 0
-          for (const chunk of chunks) {
-            decompressed.set(chunk, offset)
-            offset += chunk.length
-          }
-          
-          const decoder = new TextDecoder()
-          const jsonString = decoder.decode(decompressed)
-          return JSON.parse(jsonString) as SiteHealthData
-        } catch (err) {
-          // If decompression fails, try parsing as regular base64
-          console.warn('Decompression failed, trying direct parse:', err)
-        }
-      }
-      
-      // Fallback: decode as regular base64
-      const jsonString = decodeURIComponent(escape(atob(encoded)))
-      return JSON.parse(jsonString) as SiteHealthData
-    } catch (err) {
-      throw new Error('Failed to decode share data')
-    }
-  }
-
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Get data from URL hash
-        const hash = window.location.hash.substring(1) // Remove the #
-        if (!hash) {
-          setError('No data found in share link')
+        // Fetch data from API using the ID
+        const response = await fetch(`/api/share/${id}`)
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError('Report not found. The share link may be invalid or expired.')
+          } else {
+            setError('Failed to load report. Please try again later.')
+          }
           return
         }
 
-        // Decompress and decode
-        const decompressed = await decompressAndDecode(hash)
-        setParsedData(decompressed)
+        const { data } = await response.json()
+        setParsedData(data)
       } catch (err) {
-        setError('Invalid share link. The data may be corrupted.')
-        console.error('Error parsing share data:', err)
+        setError('Failed to load report. Please check your connection and try again.')
+        console.error('Error loading share data:', err)
       }
     }
 
-    loadData()
-  }, [])
+    if (id) {
+      loadData()
+    } else {
+      setError('Invalid share link. Missing report ID.')
+    }
+  }, [id])
 
   if (error) {
     return (
