@@ -2,8 +2,11 @@ import { SiteHealthData } from './parser';
 import { randomUUID } from 'crypto';
 import { promises as fs } from 'fs';
 import path from 'path';
+import os from 'os';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
+// Use /tmp in serverless environments, otherwise use data directory
+const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+const DATA_DIR = isServerless ? path.join(os.tmpdir(), 'sitehealthdoctor') : path.join(process.cwd(), 'data');
 const REPORTS_FILE = path.join(DATA_DIR, 'reports.json');
 
 interface StoredReport {
@@ -42,10 +45,17 @@ async function loadReports(): Promise<Map<string, StoredReport>> {
 }
 
 async function saveReports(reports: Map<string, StoredReport>) {
-  await ensureDataDir();
-  const reportsArray = Array.from(reports.values());
-  await fs.writeFile(REPORTS_FILE, JSON.stringify(reportsArray, null, 2), 'utf-8');
-  reportsCache = reports;
+  try {
+    await ensureDataDir();
+    const reportsArray = Array.from(reports.values());
+    await fs.writeFile(REPORTS_FILE, JSON.stringify(reportsArray, null, 2), 'utf-8');
+    reportsCache = reports;
+  } catch (error) {
+    console.error('Error saving reports to file:', error);
+    // In serverless, file writes may fail, but we can still use in-memory cache
+    reportsCache = reports;
+    throw error;
+  }
 }
 
 export async function saveReport(data: SiteHealthData): Promise<string> {

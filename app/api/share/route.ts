@@ -9,8 +9,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ id })
   } catch (error) {
     console.error('Error saving report:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
-      { error: 'Failed to save report' },
+      { error: `Failed to save report: ${errorMessage}` },
       { status: 500 }
     )
   }
