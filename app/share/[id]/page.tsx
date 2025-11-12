@@ -124,119 +124,119 @@ function SharePageContent({ id }: { id: string }) {
                       </div>
                     </div>
                   )}
-              
-              {activeSection === 'wordpress' && (
-                <div>
+                  
+                  {activeSection === 'wordpress' && (
+                    <div>
                       <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">WordPress Environment</h2>
                       <div className="space-y-2 overflow-y-auto">
-                    {Object.entries(parsedData.wordpress).map(([key, value]) => (
-                      <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                        <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{key}</div>
-                        <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                        {Object.entries(parsedData.wordpress).map(([key, value]) => (
+                          <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {activeSection === 'server' && (
-                <div>
+                    </div>
+                  )}
+                  
+                  {activeSection === 'server' && (
+                    <div>
                       <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Server Environment</h2>
                       <div className="space-y-2 overflow-y-auto">
-                    {Object.entries(parsedData.server).map(([key, value]) => (
-                      <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                        <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{key}</div>
-                        <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                        {Object.entries(parsedData.server).map(([key, value]) => (
+                          <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {activeSection === 'theme' && (
-                <div>
+                    </div>
+                  )}
+                  
+                  {activeSection === 'theme' && (
+                    <div>
                       <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Active Theme</h2>
                       <div className="space-y-2 overflow-y-auto">
-                    {Object.entries(parsedData.theme).map(([key, value]) => (
-                      <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                        <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{key}</div>
-                        <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                        {Object.entries(parsedData.theme).map(([key, value]) => (
+                          <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {activeSection === 'plugins' && (
-                <div>
+                    </div>
+                  )}
+                  
+                  {activeSection === 'plugins' && (
+                    <div>
                       <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Active Plugins ({parsedData.plugins.length})</h2>
                       <div className="space-y-2 overflow-y-auto">
-                    {parsedData.plugins.map((plugin, index) => (
-                      <div
-                        key={index}
-                        className="p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600"
-                      >
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1.5">
-                          {plugin.name}
-                        </div>
-                        <div className="grid grid-cols-1 gap-1 text-sm">
-                          <div>
-                            <span className="text-gray-500 dark:text-gray-400">Version: </span>
-                            <span className="text-gray-900 dark:text-gray-100">{plugin.version}</span>
+                        {parsedData.plugins.map((plugin, index) => (
+                          <div
+                            key={index}
+                            className="p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600"
+                          >
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1.5">
+                              {plugin.name}
+                            </div>
+                            <div className="grid grid-cols-1 gap-1 text-sm">
+                              <div>
+                                <span className="text-gray-500 dark:text-gray-400">Version: </span>
+                                <span className="text-gray-900 dark:text-gray-100">{plugin.version}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-500 dark:text-gray-400">Author: </span>
+                                <span className="text-gray-900 dark:text-gray-100">{plugin.author}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <span className="text-gray-500 dark:text-gray-400">Author: </span>
-                            <span className="text-gray-900 dark:text-gray-100">{plugin.author}</span>
-                          </div>
-                        </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {activeSection === 'database' && (
-                <div>
+                    </div>
+                  )}
+                  
+                  {activeSection === 'database' && (
+                    <div>
                       <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Database</h2>
                       <div className="space-y-2 overflow-y-auto">
-                    {Object.entries(parsedData.database).map(([key, value]) => (
-                      <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                        <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{key}</div>
-                        <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                        {Object.entries(parsedData.database).map(([key, value]) => (
+                          <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {activeSection === 'raw' && (
-                <div>
-                  <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Raw Site Health</h2>
-                  <div className="space-y-2 overflow-y-auto">
-                    <div className="flex justify-end mb-2">
-                      <button
-                        onClick={async () => {
-                          try {
-                            await navigator.clipboard.writeText(rawInput)
-                            alert('Raw data copied to clipboard!')
-                          } catch (err) {
-                            console.error('Failed to copy:', err)
-                          }
-                        }}
-                        className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
-                      >
-                        Copy Raw Data
-                      </button>
                     </div>
-                    <div className="bg-gray-50 dark:bg-gray-900/50 rounded p-3 border border-gray-200 dark:border-gray-700">
-                      <pre className="text-sm text-gray-800 dark:text-gray-200 font-mono whitespace-pre-wrap break-words leading-relaxed">
-                        {rawInput}
-                      </pre>
+                  )}
+                  
+                  {activeSection === 'raw' && (
+                    <div>
+                      <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Raw Site Health</h2>
+                      <div className="space-y-2 overflow-y-auto">
+                        <div className="flex justify-end mb-2">
+                          <button
+                            onClick={async () => {
+                              try {
+                                await navigator.clipboard.writeText(rawInput)
+                                alert('Raw data copied to clipboard!')
+                              } catch (err) {
+                                console.error('Failed to copy:', err)
+                              }
+                            }}
+                            className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                          >
+                            Copy Raw Data
+                          </button>
+                        </div>
+                        <div className="bg-gray-50 dark:bg-gray-900/50 rounded p-3 border border-gray-200 dark:border-gray-700">
+                          <pre className="text-sm text-gray-800 dark:text-gray-200 font-mono whitespace-pre-wrap break-words leading-relaxed">
+                            {rawInput}
+                          </pre>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
-              )}
-              </div>
             </div>
           </div>
         </main>
