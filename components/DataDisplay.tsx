@@ -26,20 +26,20 @@ export function DataDisplay({ data }: DataDisplayProps) {
   }
 
   return (
-    <div className="space-y-3">
-      <CollapsibleSection title="WordPress Environment" icon="📝" defaultOpen={true}>
+    <>
+      <CollapsibleSection title="WordPress Environment" icon="📝" defaultOpen={false}>
         {renderKeyValue(data.wordpress)}
       </CollapsibleSection>
 
-      <CollapsibleSection title="Server Environment" icon="🖥️" defaultOpen={true}>
+      <CollapsibleSection title="Server Environment" icon="🖥️" defaultOpen={false}>
         {renderKeyValue(data.server)}
       </CollapsibleSection>
 
-      <CollapsibleSection title="Active Theme" icon="🎨">
+      <CollapsibleSection title="Active Theme" icon="🎨" defaultOpen={false}>
         {renderKeyValue(data.theme)}
       </CollapsibleSection>
 
-      <CollapsibleSection title={`Active Plugins (${data.plugins.length})`} icon="🔌">
+      <CollapsibleSection title={`Active Plugins (${data.plugins.length})`} icon="🔌" defaultOpen={false}>
         <div className="space-y-2">
           {data.plugins.map((plugin, index) => (
             <div
@@ -64,10 +64,10 @@ export function DataDisplay({ data }: DataDisplayProps) {
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Database" icon="💾">
+      <CollapsibleSection title="Database" icon="💾" defaultOpen={false}>
         {renderKeyValue(data.database)}
       </CollapsibleSection>
-    </div>
+    </>
   )
 }
 

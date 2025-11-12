@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { parseSiteHealth, stripSensitiveData, SiteHealthData } from '@/lib/parser'
-import { SummaryPanel } from '@/components/SummaryPanel'
 import { DataDisplay } from '@/components/DataDisplay'
 import { DarkModeToggle } from '@/components/DarkModeToggle'
 import { CollapsibleSection } from '@/components/CollapsibleSection'
+import { SummaryPanelContent } from '@/components/SummaryPanel'
 
 export default function Home() {
   const [rawInput, setRawInput] = useState('')
@@ -173,11 +173,12 @@ export default function Home() {
               </div>
             )}
 
-            <div className="space-y-3">
-              <SummaryPanel data={parsedData.summary} />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <DataDisplay data={parsedData} />
-                <CollapsibleSection title="Raw Site Health" icon="📄" defaultOpen={false}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <CollapsibleSection title="Health Summary" icon="📊" defaultOpen={false}>
+                <SummaryPanelContent data={parsedData.summary} />
+              </CollapsibleSection>
+              <DataDisplay data={parsedData} />
+              <CollapsibleSection title="Raw Site Health" icon="📄" defaultOpen={false}>
                 <div className="space-y-2">
                   <div className="flex justify-end">
                     <button
@@ -201,7 +202,6 @@ export default function Home() {
                   </div>
                 </div>
               </CollapsibleSection>
-              </div>
             </div>
           </div>
         )}
