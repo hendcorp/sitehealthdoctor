@@ -47,9 +47,25 @@ export default function Home() {
     try {
       const dataToShare = stripSensitive ? stripSensitiveData(parsedData) : parsedData
       
-      // Encode data as base64 in URL hash (works without server storage)
-      const encodedData = btoa(JSON.stringify(dataToShare))
-      const link = `${window.location.origin}/share#${encodedData}`
+      const response = await fetch('/api/share', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataToShare),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+      }
+
+      const { id } = await response.json()
+      if (!id) {
+        throw new Error('No ID returned from server')
+      }
+
+      const link = `${window.location.origin}/share/${id}`
       setShareLink(link)
 
       // Copy to clipboard

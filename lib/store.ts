@@ -58,9 +58,19 @@ async function saveReports(reports: Map<string, StoredReport>) {
   }
 }
 
+function generateShortId(): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 10; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 export async function saveReport(data: SiteHealthData): Promise<string> {
   const reports = await loadReports();
-  const id = randomUUID();
+  // Generate short 10-character ID instead of UUID
+  const id = generateShortId();
   const report: StoredReport = {
     id,
     data,
