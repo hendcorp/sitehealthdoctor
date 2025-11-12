@@ -184,9 +184,8 @@ export default function Home() {
               <div className="w-64 flex-shrink-0">
                 <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
               </div>
-              <div className="flex-1 overflow-y-auto">
-                <div className="h-full bg-white dark:bg-gray-900 p-8">
-                  <div className="max-w-4xl mx-auto">
+              <div className="flex-1 overflow-y-auto bg-white dark:bg-gray-900">
+                <div className="max-w-4xl mx-auto p-8">
                   {activeSection === 'summary' && (
                     <div>
                       <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Health Summary</h2>
@@ -307,7 +306,6 @@ export default function Home() {
                       </div>
                     </div>
                   )}
-                  </div>
                 </div>
               </div>
             </div>
