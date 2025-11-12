@@ -35,6 +35,57 @@ export default function Home() {
     }
   }
 
+  const generateShortId = (): string => {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    let result = ''
+    for (let i = 0; i < 10; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    return result
+  }
+
+  const compressAndEncode = async (data: SiteHealthData): Promise<string> => {
+    const jsonString = JSON.stringify(data)
+    
+    // Use CompressionStream API if available (modern browsers)
+    if (typeof CompressionStream !== 'undefined') {
+      try {
+        const stream = new CompressionStream('gzip')
+        const writer = stream.writable.getWriter()
+        const reader = stream.readable.getReader()
+        
+        const encoder = new TextEncoder()
+        writer.write(encoder.encode(jsonString))
+        writer.close()
+        
+        const chunks: Uint8Array[] = []
+        let done = false
+        
+        while (!done) {
+          const { value, done: readerDone } = await reader.read()
+          done = readerDone
+          if (value) chunks.push(value)
+        }
+        
+        const compressed = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0))
+        let offset = 0
+        for (const chunk of chunks) {
+          compressed.set(chunk, offset)
+          offset += chunk.length
+        }
+        
+        // Convert to base64
+        const binaryString = Array.from(compressed).map(b => String.fromCharCode(b)).join('')
+        return btoa(binaryString)
+      } catch (err) {
+        console.warn('Compression failed, using uncompressed:', err)
+      }
+    }
+    
+    // Fallback: use uncompressed base64
+    return btoa(unescape(encodeURIComponent(jsonString)))
+  }
+
   const handleGenerateShareLink = async () => {
     if (!parsedData) {
       setError('Please parse the Site Health info first')
@@ -47,34 +98,17 @@ export default function Home() {
     try {
       const dataToShare = stripSensitive ? stripSensitiveData(parsedData) : parsedData
       
-      const response = await fetch('/api/share', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToShare),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
-      }
-
-      const { id } = await response.json()
-      if (!id) {
-        throw new Error('No ID returned from server')
-      }
-
-      const link = `${window.location.origin}/share/${id}`
+      // Generate short ID and compress data
+      const shortId = generateShortId()
+      const encodedData = await compressAndEncode(dataToShare)
+      const link = `${window.location.origin}/share/${shortId}#${encodedData}`
       setShareLink(link)
 
-      // Copy to clipboard
+      // Copy to clipboard (silently, no popup)
       try {
         await navigator.clipboard.writeText(link)
-        alert('Share link copied to clipboard!')
       } catch (clipboardErr) {
         console.warn('Failed to copy to clipboard:', clipboardErr)
-        // Still show the link even if clipboard copy fails
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to generate share link. Please try again.'

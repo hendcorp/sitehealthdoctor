@@ -1,17 +1,130 @@
-import { getReport } from '@/lib/store'
-import { notFound } from 'next/navigation'
-import { SummaryPanel } from '@/components/SummaryPanel'
-import { DataDisplay } from '@/components/DataDisplay'
+'use client'
+
+import { useEffect, useState, Suspense } from 'react'
+import { SiteHealthData } from '@/lib/parser'
+import { SummaryPanelContent } from '@/components/SummaryPanel'
 import { DarkModeToggle } from '@/components/DarkModeToggle'
+import { Sidebar } from '@/components/Sidebar'
 import Link from 'next/link'
 
-export const dynamic = 'force-dynamic'
+function SharePageContent({ id }: { id: string }) {
+  const [parsedData, setParsedData] = useState<SiteHealthData | null>(null)
+  const [activeSection, setActiveSection] = useState('summary')
+  const [error, setError] = useState<string | null>(null)
 
-export default async function SharePage({ params }: { params: { id: string } }) {
-  const report = await getReport(params.id)
+  const decompressAndDecode = async (encoded: string): Promise<SiteHealthData> => {
+    try {
+      // Try to decompress if it's gzip compressed
+      if (typeof DecompressionStream !== 'undefined') {
+        try {
+          const binaryString = atob(encoded)
+          const bytes = new Uint8Array(binaryString.length)
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i)
+          }
+          
+          const stream = new DecompressionStream('gzip')
+          const writer = stream.writable.getWriter()
+          const reader = stream.readable.getReader()
+          
+          writer.write(bytes)
+          writer.close()
+          
+          const chunks: Uint8Array[] = []
+          let done = false
+          
+          while (!done) {
+            const { value, done: readerDone } = await reader.read()
+            done = readerDone
+            if (value) chunks.push(value)
+          }
+          
+          const decompressed = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0))
+          let offset = 0
+          for (const chunk of chunks) {
+            decompressed.set(chunk, offset)
+            offset += chunk.length
+          }
+          
+          const decoder = new TextDecoder()
+          const jsonString = decoder.decode(decompressed)
+          return JSON.parse(jsonString) as SiteHealthData
+        } catch (err) {
+          // If decompression fails, try parsing as regular base64
+          console.warn('Decompression failed, trying direct parse:', err)
+        }
+      }
+      
+      // Fallback: decode as regular base64
+      const jsonString = decodeURIComponent(escape(atob(encoded)))
+      return JSON.parse(jsonString) as SiteHealthData
+    } catch (err) {
+      throw new Error('Failed to decode share data')
+    }
+  }
 
-  if (!report) {
-    notFound()
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Get data from URL hash
+        const hash = window.location.hash.substring(1) // Remove the #
+        if (!hash) {
+          setError('No data found in share link')
+          return
+        }
+
+        // Decompress and decode
+        const decompressed = await decompressAndDecode(hash)
+        setParsedData(decompressed)
+      } catch (err) {
+        setError('Invalid share link. The data may be corrupted.')
+        console.error('Error parsing share data:', err)
+      }
+    }
+
+    loadData()
+  }, [])
+
+  if (error) {
+    return (
+      <div className="min-h-screen">
+        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                Site Health Doctor
+              </h1>
+              <DarkModeToggle />
+            </div>
+          </div>
+        </header>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-red-600 dark:text-red-400">❌</span>
+              <span className="font-medium text-red-900 dark:text-red-100">{error}</span>
+            </div>
+            <Link
+              href="/"
+              className="inline-block px-4 py-2 bg-accent hover:bg-accent-dark text-white font-medium rounded-lg transition-colors"
+            >
+              Create New Report
+            </Link>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  if (!parsedData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading shared report...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -24,7 +137,7 @@ export default async function SharePage({ params }: { params: { id: string } }) 
                 Site Health Report
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Shared report • {new Date(report.createdAt).toLocaleDateString()}
+                Shared report
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -41,8 +154,107 @@ export default async function SharePage({ params }: { params: { id: string } }) 
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <SummaryPanel data={report.data.summary} />
-        <DataDisplay data={report.data} />
+        <div className="flex h-[calc(100vh-200px)]">
+          <div className="w-1/4 min-w-[200px]">
+            <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
+          </div>
+          <div className="w-3/4 overflow-y-auto p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+              {activeSection === 'summary' && (
+                <div>
+                  <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Health Summary</h2>
+                  <div className="max-h-[500px] overflow-y-auto">
+                    <SummaryPanelContent data={parsedData.summary} />
+                  </div>
+                </div>
+              )}
+              
+              {activeSection === 'wordpress' && (
+                <div>
+                  <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">WordPress Environment</h2>
+                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                    {Object.entries(parsedData.wordpress).map(([key, value]) => (
+                      <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                        <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                        <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {activeSection === 'server' && (
+                <div>
+                  <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Server Environment</h2>
+                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                    {Object.entries(parsedData.server).map(([key, value]) => (
+                      <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                        <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                        <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {activeSection === 'theme' && (
+                <div>
+                  <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Active Theme</h2>
+                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                    {Object.entries(parsedData.theme).map(([key, value]) => (
+                      <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                        <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                        <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {activeSection === 'plugins' && (
+                <div>
+                  <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Active Plugins ({parsedData.plugins.length})</h2>
+                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                    {parsedData.plugins.map((plugin, index) => (
+                      <div
+                        key={index}
+                        className="p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600"
+                      >
+                        <div className="text-xs font-medium text-gray-900 dark:text-gray-100 mb-1.5">
+                          {plugin.name}
+                        </div>
+                        <div className="grid grid-cols-1 gap-1 text-xs">
+                          <div>
+                            <span className="text-gray-500 dark:text-gray-400">Version: </span>
+                            <span className="text-gray-900 dark:text-gray-100">{plugin.version}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500 dark:text-gray-400">Author: </span>
+                            <span className="text-gray-900 dark:text-gray-100">{plugin.author}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {activeSection === 'database' && (
+                <div>
+                  <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Database</h2>
+                  <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                    {Object.entries(parsedData.database).map(([key, value]) => (
+                      <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                        <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                        <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </main>
 
       <footer className="mt-16 py-8 border-t border-gray-200 dark:border-gray-700">
@@ -54,3 +266,17 @@ export default async function SharePage({ params }: { params: { id: string } }) 
   )
 }
 
+export default function SharePage({ params }: { params: { id: string } }) {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    }>
+      <SharePageContent id={params.id} />
+    </Suspense>
+  )
+}
