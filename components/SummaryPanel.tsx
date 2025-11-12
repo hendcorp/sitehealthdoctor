@@ -41,6 +41,13 @@ export function getPhpVersionColor(version: string) {
   return 'text-green-600 dark:text-green-400'
 }
 
+export function getAggregatorVersionColor(version: string) {
+  if (!version) return 'text-gray-900 dark:text-gray-100'
+  const majorVersion = parseInt(version.split('.')[0])
+  if (majorVersion >= 5) return 'text-green-600 dark:text-green-400'
+  return 'text-red-600 dark:text-red-400'
+}
+
 export function SummaryPanelContent({ data, plugins = [] }: SummaryPanelProps) {
   // Filter aggregator plugins (plugins that start with "WP RSS Aggregator")
   const aggregatorPlugins = plugins.filter(plugin => 
@@ -100,7 +107,9 @@ export function SummaryPanelContent({ data, plugins = [] }: SummaryPanelProps) {
                 <div className="grid grid-cols-1 gap-1 text-sm">
                   <div>
                     <span className="text-gray-500 dark:text-gray-400">Version: </span>
-                    <span className="text-gray-900 dark:text-gray-100">{plugin.version}</span>
+                    <span className={`font-medium ${getAggregatorVersionColor(plugin.version)}`}>
+                      {plugin.version}
+                    </span>
                   </div>
                   <div>
                     <span className="text-gray-500 dark:text-gray-400">Author: </span>
