@@ -33,77 +33,123 @@ export function parseSiteHealth(rawText: string): SiteHealthData {
   };
 
   let currentSection = '';
-  let inPlugins = false;
-  let pluginBuffer: string[] = [];
+  let currentPlugin: string[] = [];
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     
-    if (!line) continue;
-
-    // Detect section headers
-    if (line.includes('== WordPress Environment ==')) {
-      currentSection = 'wordpress';
-      continue;
-    } else if (line.includes('== Server Environment ==')) {
-      currentSection = 'server';
-      continue;
-    } else if (line.includes('== Active Theme ==')) {
-      currentSection = 'theme';
-      continue;
-    } else if (line.includes('== Active Plugins ==')) {
-      currentSection = 'plugins';
-      inPlugins = true;
-      continue;
-    } else if (line.includes('== Database ==') || line.includes('== Database Server ==')) {
-      currentSection = 'database';
-      inPlugins = false;
-      continue;
-    } else if (line.includes('== Cron ==') || line.includes('== Cron Events ==')) {
-      currentSection = 'cron';
-      inPlugins = false;
-      continue;
-    }
-
-    // Parse key-value pairs
-    if (line.includes(':')) {
-      const [key, ...valueParts] = line.split(':');
-      const value = valueParts.join(':').trim();
-      
-      if (inPlugins && currentSection === 'plugins') {
-        pluginBuffer.push(line);
-      } else if (currentSection && data[currentSection as keyof typeof data]) {
-        (data[currentSection as keyof typeof data] as Record<string, string>)[key.trim()] = value;
-      }
-    }
-
-    // Process plugin buffer when we hit a new section or end
-    if (inPlugins && (line.startsWith('==') || i === lines.length - 1)) {
-      if (pluginBuffer.length > 0) {
-        const plugin = parsePlugin(pluginBuffer);
+    if (!line) {
+      // Empty line might indicate end of plugin entry
+      if (currentSection === 'plugins' && currentPlugin.length > 0) {
+        const plugin = parsePlugin(currentPlugin);
         if (plugin) {
           data.plugins!.push(plugin);
         }
-        pluginBuffer = [];
+        currentPlugin = [];
       }
-      inPlugins = false;
+      continue;
+    }
+
+    // Detect section headers - WordPress uses "== Section Name ==" format
+    if (line.match(/^==\s*.+\s*==$/)) {
+      // Process any pending plugin before switching sections
+      if (currentSection === 'plugins' && currentPlugin.length > 0) {
+        const plugin = parsePlugin(currentPlugin);
+        if (plugin) {
+          data.plugins!.push(plugin);
+        }
+        currentPlugin = [];
+      }
+
+      // Determine section type
+      const sectionLower = line.toLowerCase();
+      if (sectionLower.includes('wordpress environment')) {
+        currentSection = 'wordpress';
+      } else if (sectionLower.includes('server environment')) {
+        currentSection = 'server';
+      } else if (sectionLower.includes('active theme')) {
+        currentSection = 'theme';
+      } else if (sectionLower.includes('active plugins')) {
+        currentSection = 'plugins';
+      } else if (sectionLower.includes('database')) {
+        currentSection = 'database';
+      } else if (sectionLower.includes('cron')) {
+        currentSection = 'cron';
+      } else {
+        // Unknown section, but continue parsing
+        currentSection = '';
+      }
+      continue;
+    }
+
+    // Skip if no current section
+    if (!currentSection) continue;
+
+    // Parse key-value pairs
+    if (line.includes(':')) {
+      const colonIndex = line.indexOf(':');
+      const key = line.substring(0, colonIndex).trim();
+      const value = line.substring(colonIndex + 1).trim();
+      
+      if (currentSection === 'plugins') {
+        // Collect plugin info
+        currentPlugin.push(line);
+      } else {
+        // Store in appropriate section
+        const sectionData = data[currentSection as keyof typeof data] as Record<string, string> | undefined;
+        if (sectionData) {
+          sectionData[key] = value;
+        }
+      }
     }
   }
 
-  // Process any remaining plugins
-  if (pluginBuffer.length > 0) {
-    const plugin = parsePlugin(pluginBuffer);
+  // Process any remaining plugin at the end
+  if (currentSection === 'plugins' && currentPlugin.length > 0) {
+    const plugin = parsePlugin(currentPlugin);
     if (plugin) {
       data.plugins!.push(plugin);
     }
   }
 
-  // Extract summary data
+  // Extract summary data with multiple possible key variations
+  const serverData = data.server || {};
+  const wpData = data.wordpress || {};
+  
+  // Try to find PHP version with various key formats
+  const phpVersion = 
+    serverData['PHP Version'] || 
+    serverData['PHP version'] || 
+    serverData['PHP'] ||
+    Object.keys(serverData).find(k => k.toLowerCase().includes('php') && k.toLowerCase().includes('version')) 
+      ? serverData[Object.keys(serverData).find(k => k.toLowerCase().includes('php') && k.toLowerCase().includes('version'))!]
+      : '';
+  
+  // Try to find WordPress version with various key formats
+  const wpVersion = 
+    wpData['Version'] || 
+    wpData['WordPress version'] || 
+    wpData['WordPress'] ||
+    wpData['WordPress Version'] ||
+    Object.keys(wpData).find(k => k.toLowerCase().includes('version')) 
+      ? wpData[Object.keys(wpData).find(k => k.toLowerCase().includes('version'))!]
+      : '';
+  
+  // Try to find memory limit with various key formats
+  const memoryLimit = 
+    serverData['PHP Memory Limit'] || 
+    serverData['Memory limit'] || 
+    serverData['Memory Limit'] ||
+    serverData['PHP memory limit'] ||
+    Object.keys(serverData).find(k => k.toLowerCase().includes('memory') && k.toLowerCase().includes('limit')) 
+      ? serverData[Object.keys(serverData).find(k => k.toLowerCase().includes('memory') && k.toLowerCase().includes('limit'))!]
+      : '';
+  
   data.summary = {
-    phpVersion: data.server?.['PHP Version'] || data.server?.['PHP version'] || '',
-    wpVersion: data.wordpress?.['Version'] || data.wordpress?.['WordPress version'] || '',
+    phpVersion: phpVersion,
+    wpVersion: wpVersion,
     pluginCount: data.plugins?.length || 0,
-    memoryLimit: data.server?.['PHP Memory Limit'] || data.server?.['Memory limit'] || '',
+    memoryLimit: memoryLimit,
     healthStatus: calculateHealthStatus(data),
   };
 
@@ -115,19 +161,23 @@ function parsePlugin(lines: string[]): { name: string; version: string; author: 
   
   for (const line of lines) {
     if (line.includes(':')) {
-      const [key, ...valueParts] = line.split(':');
-      const value = valueParts.join(':').trim();
-      const keyLower = key.trim().toLowerCase();
+      const colonIndex = line.indexOf(':');
+      const key = line.substring(0, colonIndex).trim();
+      const value = line.substring(colonIndex + 1).trim();
+      const keyLower = key.toLowerCase();
       
-      if (keyLower.includes('name')) {
+      if (keyLower.includes('name') || keyLower === 'name') {
         plugin.name = value;
-      } else if (keyLower.includes('version')) {
+      } else if (keyLower.includes('version') || keyLower === 'version') {
         plugin.version = value;
-      } else if (keyLower.includes('author')) {
+      } else if (keyLower.includes('author') || keyLower === 'author') {
         plugin.author = value;
-      } else if (keyLower.includes('status')) {
+      } else if (keyLower.includes('status') || keyLower === 'status') {
         plugin.status = value;
       }
+    } else if (!plugin.name && line.trim()) {
+      // Sometimes plugin name might be on its own line
+      plugin.name = line.trim();
     }
   }
 

@@ -23,6 +23,10 @@ export default function Home() {
     try {
       setError(null)
       const parsed = parseSiteHealth(rawInput)
+      console.log('Parsed data:', parsed)
+      console.log('WordPress data:', parsed.wordpress)
+      console.log('Server data:', parsed.server)
+      console.log('Plugins:', parsed.plugins)
       setParsedData(parsed)
     } catch (err) {
       setError('Failed to parse Site Health info. Please check the format.')
