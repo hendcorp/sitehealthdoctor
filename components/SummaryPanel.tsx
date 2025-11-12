@@ -42,39 +42,39 @@ export function SummaryPanel({ data }: SummaryPanelProps) {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+      <h2 className="text-sm font-medium mb-3 text-gray-900 dark:text-gray-100">
         Health Summary
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="space-y-1">
-          <div className="text-sm text-gray-600 dark:text-gray-400">PHP Version</div>
-          <div className={`text-lg font-medium ${getPhpVersionColor(data.phpVersion)}`}>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="space-y-0.5">
+          <div className="text-xs text-gray-500 dark:text-gray-400">PHP Version</div>
+          <div className={`text-sm font-medium ${getPhpVersionColor(data.phpVersion)}`}>
             {data.phpVersion || 'N/A'}
           </div>
         </div>
-        <div className="space-y-1">
-          <div className="text-sm text-gray-600 dark:text-gray-400">WordPress Version</div>
-          <div className="text-lg font-medium text-gray-900 dark:text-gray-100">
+        <div className="space-y-0.5">
+          <div className="text-xs text-gray-500 dark:text-gray-400">WordPress Version</div>
+          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
             {data.wpVersion || 'N/A'}
           </div>
         </div>
-        <div className="space-y-1">
-          <div className="text-sm text-gray-600 dark:text-gray-400">Active Plugins</div>
-          <div className="text-lg font-medium text-gray-900 dark:text-gray-100">
+        <div className="space-y-0.5">
+          <div className="text-xs text-gray-500 dark:text-gray-400">Active Plugins</div>
+          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
             {data.pluginCount}
           </div>
         </div>
-        <div className="space-y-1">
-          <div className="text-sm text-gray-600 dark:text-gray-400">Memory Limit</div>
-          <div className="text-lg font-medium text-gray-900 dark:text-gray-100">
+        <div className="space-y-0.5">
+          <div className="text-xs text-gray-500 dark:text-gray-400">Memory Limit</div>
+          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
             {data.memoryLimit || 'N/A'}
           </div>
         </div>
-        <div className="space-y-1">
-          <div className="text-sm text-gray-600 dark:text-gray-400">Overall Status</div>
-          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(data.healthStatus)}`}>
-            <span>{getStatusIcon(data.healthStatus)}</span>
+        <div className="space-y-0.5">
+          <div className="text-xs text-gray-500 dark:text-gray-400">Overall Status</div>
+          <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(data.healthStatus)}`}>
+            <span className="text-xs">{getStatusIcon(data.healthStatus)}</span>
             <span className="capitalize">{data.healthStatus}</span>
           </div>
         </div>
