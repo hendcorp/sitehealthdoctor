@@ -173,7 +173,7 @@ export default function Home() {
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
               <CollapsibleSection title="Health Summary" icon="📊" defaultOpen={false}>
                 <SummaryPanelContent data={parsedData.summary} />
               </CollapsibleSection>
