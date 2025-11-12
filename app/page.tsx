@@ -124,8 +124,8 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <div className="h-full flex flex-col">
-            <div className="flex items-center justify-between px-8 pt-6 pb-4 border-b border-gray-200 dark:border-gray-800">
+          <div className="h-full flex flex-col items-center">
+            <div className="w-full max-w-4xl mx-auto flex items-center justify-between px-8 pt-6 pb-4 border-b border-gray-200 dark:border-gray-800">
               <button
                 onClick={() => {
                   setParsedData(null)
