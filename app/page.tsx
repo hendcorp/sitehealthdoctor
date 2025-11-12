@@ -190,7 +190,7 @@ export default function Home() {
                     <div>
                       <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Health Summary</h2>
                       <div className="overflow-y-auto">
-                        <SummaryPanelContent data={parsedData.summary} />
+                        <SummaryPanelContent data={parsedData.summary} plugins={parsedData.plugins} />
                       </div>
                     </div>
                   )}
