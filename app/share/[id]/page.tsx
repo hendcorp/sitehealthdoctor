@@ -237,6 +237,7 @@ function SharePageContent({ id }: { id: string }) {
                     </div>
                   )}
                 </div>
+              </div>
             </div>
           </div>
         </main>
