@@ -56,19 +56,30 @@ export default function Home() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to generate share link')
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
       }
 
       const { id } = await response.json()
+      if (!id) {
+        throw new Error('No ID returned from server')
+      }
+
       const link = `${window.location.origin}/share/${id}`
       setShareLink(link)
 
       // Copy to clipboard
-      await navigator.clipboard.writeText(link)
-      alert('Share link copied to clipboard!')
+      try {
+        await navigator.clipboard.writeText(link)
+        alert('Share link copied to clipboard!')
+      } catch (clipboardErr) {
+        console.warn('Failed to copy to clipboard:', clipboardErr)
+        // Still show the link even if clipboard copy fails
+      }
     } catch (err) {
-      setError('Failed to generate share link. Please try again.')
-      console.error(err)
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate share link. Please try again.'
+      setError(errorMessage)
+      console.error('Error generating share link:', err)
     } finally {
       setIsLoading(false)
     }
@@ -154,6 +165,17 @@ export default function Home() {
                 </button>
               </div>
             </div>
+
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <span className="text-red-600 dark:text-red-400">❌</span>
+                  <span className="font-medium text-red-900 dark:text-red-100">
+                    {error}
+                  </span>
+                </div>
+              </div>
+            )}
 
             {shareLink && (
               <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg">
