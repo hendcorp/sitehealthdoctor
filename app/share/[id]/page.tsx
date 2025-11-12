@@ -9,6 +9,7 @@ import Link from 'next/link'
 
 function SharePageContent({ id }: { id: string }) {
   const [parsedData, setParsedData] = useState<SiteHealthData | null>(null)
+  const [rawInput, setRawInput] = useState<string>('')
   const [activeSection, setActiveSection] = useState('summary')
   const [error, setError] = useState<string | null>(null)
 
@@ -27,8 +28,9 @@ function SharePageContent({ id }: { id: string }) {
           return
         }
 
-        const { data } = await response.json()
+        const { data, rawInput } = await response.json()
         setParsedData(data)
+        setRawInput(rawInput || '')
       } catch (err) {
         setError('Failed to load report. Please check your connection and try again.')
         console.error('Error loading share data:', err)
@@ -201,6 +203,34 @@ function SharePageContent({ id }: { id: string }) {
                         <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+              
+              {activeSection === 'raw' && (
+                <div>
+                  <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Raw Site Health</h2>
+                  <div className="space-y-2 overflow-y-auto">
+                    <div className="flex justify-end mb-2">
+                      <button
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(rawInput)
+                            alert('Raw data copied to clipboard!')
+                          } catch (err) {
+                            console.error('Failed to copy:', err)
+                          }
+                        }}
+                        className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                      >
+                        Copy Raw Data
+                      </button>
+                    </div>
+                    <div className="bg-gray-50 dark:bg-gray-900/50 rounded p-3 border border-gray-200 dark:border-gray-700">
+                      <pre className="text-sm text-gray-800 dark:text-gray-200 font-mono whitespace-pre-wrap break-words leading-relaxed">
+                        {rawInput}
+                      </pre>
+                    </div>
                   </div>
                 </div>
               )}

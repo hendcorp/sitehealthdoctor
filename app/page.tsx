@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { parseSiteHealth, stripSensitiveData, SiteHealthData } from '@/lib/parser'
+import { parseSiteHealth, SiteHealthData } from '@/lib/parser'
 import { DarkModeToggle } from '@/components/DarkModeToggle'
 import { SummaryPanelContent } from '@/components/SummaryPanel'
 import { Sidebar } from '@/components/Sidebar'
@@ -12,7 +12,6 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [shareLink, setShareLink] = useState<string | null>(null)
-  const [stripSensitive, setStripSensitive] = useState(true)
   const [activeSection, setActiveSection] = useState('summary')
 
   const handleParse = () => {
@@ -46,15 +45,16 @@ export default function Home() {
     setError(null)
 
     try {
-      const dataToShare = stripSensitive ? stripSensitiveData(parsedData) : parsedData
-      
       // Save report to server and get short ID
       const response = await fetch('/api/share', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(dataToShare),
+        body: JSON.stringify({
+          data: parsedData,
+          rawInput: rawInput,
+        }),
       })
 
       if (!response.ok) {
@@ -138,15 +138,6 @@ export default function Home() {
                 ← New Report
               </button>
               <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                  <input
-                    type="checkbox"
-                    checked={stripSensitive}
-                    onChange={(e) => setStripSensitive(e.target.checked)}
-                    className="rounded border-gray-300 dark:border-gray-600 text-accent focus:ring-accent"
-                  />
-                  Strip sensitive data
-                </label>
                 <button
                   onClick={handleGenerateShareLink}
                   disabled={isLoading}

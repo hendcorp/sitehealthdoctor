@@ -16,7 +16,10 @@ export async function GET(
       )
     }
     
-    return NextResponse.json({ data: report.data })
+    return NextResponse.json({ 
+      data: report.data,
+      rawInput: report.rawInput || ''
+    })
   } catch (error) {
     console.error('Error retrieving report:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'

@@ -4,8 +4,8 @@ import { SiteHealthData } from '@/lib/parser'
 
 export async function POST(request: NextRequest) {
   try {
-    const data: SiteHealthData = await request.json()
-    const id = await saveReport(data)
+    const { data, rawInput }: { data: SiteHealthData; rawInput: string } = await request.json()
+    const id = await saveReport(data, rawInput)
     return NextResponse.json({ id })
   } catch (error) {
     console.error('Error saving report:', error)

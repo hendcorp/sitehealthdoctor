@@ -19,6 +19,7 @@ function getRedisClient() {
 interface StoredReport {
   id: string;
   data: SiteHealthData;
+  rawInput: string;
   createdAt: string;
 }
 
@@ -31,7 +32,7 @@ function generateShortId(): string {
   return result;
 }
 
-export async function saveReport(data: SiteHealthData): Promise<string> {
+export async function saveReport(data: SiteHealthData, rawInput: string): Promise<string> {
   const redis = getRedisClient();
   
   if (!redis) {
@@ -51,6 +52,7 @@ export async function saveReport(data: SiteHealthData): Promise<string> {
     const report: StoredReport = {
       id,
       data,
+      rawInput,
       createdAt: new Date().toISOString(),
     };
     
