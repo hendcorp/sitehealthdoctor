@@ -210,8 +210,8 @@ export default function Home() {
                       <div className="space-y-2 overflow-y-auto">
                         {Object.entries(parsedData.wordpress).map(([key, value]) => (
                           <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
-                            <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
                           </div>
                         ))}
                       </div>
@@ -224,8 +224,8 @@ export default function Home() {
                       <div className="space-y-2 overflow-y-auto">
                         {Object.entries(parsedData.server).map(([key, value]) => (
                           <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
-                            <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
                           </div>
                         ))}
                       </div>
@@ -238,8 +238,8 @@ export default function Home() {
                       <div className="space-y-2 overflow-y-auto">
                         {Object.entries(parsedData.theme).map(([key, value]) => (
                           <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
-                            <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
                           </div>
                         ))}
                       </div>
@@ -255,10 +255,10 @@ export default function Home() {
                             key={index}
                             className="p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600"
                           >
-                            <div className="text-xs font-medium text-gray-900 dark:text-gray-100 mb-1.5">
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1.5">
                               {plugin.name}
                             </div>
-                            <div className="grid grid-cols-1 gap-1 text-xs">
+                            <div className="grid grid-cols-1 gap-1 text-sm">
                               <div>
                                 <span className="text-gray-500 dark:text-gray-400">Version: </span>
                                 <span className="text-gray-900 dark:text-gray-100">{plugin.version}</span>
@@ -280,8 +280,8 @@ export default function Home() {
                       <div className="space-y-2 overflow-y-auto">
                         {Object.entries(parsedData.database).map(([key, value]) => (
                           <div key={key} className="flex flex-col gap-1 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}</div>
-                            <div className="text-xs text-gray-900 dark:text-gray-100 break-words">{value}</div>
+                            <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{key}</div>
+                            <div className="text-sm text-gray-900 dark:text-gray-100 break-words">{value}</div>
                           </div>
                         ))}
                       </div>
@@ -302,13 +302,13 @@ export default function Home() {
                                 console.error('Failed to copy:', err)
                               }
                             }}
-                            className="px-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                            className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
                           >
                             Copy Raw Data
                           </button>
                         </div>
                         <div className="bg-gray-50 dark:bg-gray-900/50 rounded p-3 border border-gray-200 dark:border-gray-700">
-                          <pre className="text-xs text-gray-800 dark:text-gray-200 font-mono whitespace-pre-wrap break-words leading-relaxed">
+                          <pre className="text-sm text-gray-800 dark:text-gray-200 font-mono whitespace-pre-wrap break-words leading-relaxed">
                             {rawInput}
                           </pre>
                         </div>
