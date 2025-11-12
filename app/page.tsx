@@ -173,13 +173,13 @@ export default function Home() {
               </div>
             )}
 
-            <div className="columns-1 md:columns-2 gap-3 space-y-3">
-              <div className="break-inside-avoid">
-                <CollapsibleSection title="Health Summary" icon="📊" defaultOpen={false}>
-                  <SummaryPanelContent data={parsedData.summary} />
-                </CollapsibleSection>
-              </div>
-              <div className="break-inside-avoid">
+            <div className="space-y-3">
+              <CollapsibleSection title="Health Summary" icon="📊" defaultOpen={false}>
+                <SummaryPanelContent data={parsedData.summary} />
+              </CollapsibleSection>
+              
+              <div className="columns-1 md:columns-2 gap-3 space-y-3">
+                <div className="break-inside-avoid">
                 <CollapsibleSection title="WordPress Environment" icon="📝" defaultOpen={false}>
                   <div className="space-y-2">
                     {Object.entries(parsedData.wordpress).map(([key, value]) => (
@@ -278,6 +278,7 @@ export default function Home() {
                     </div>
                   </div>
                 </CollapsibleSection>
+                </div>
               </div>
             </div>
           </div>
