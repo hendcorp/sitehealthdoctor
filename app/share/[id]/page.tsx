@@ -107,9 +107,9 @@ function SharePageContent({ id }: { id: string }) {
         </div>
       </header>
 
-      <main className="h-[calc(100vh-64px)] overflow-hidden">
-        <div className="max-w-7xl mx-auto h-full">
-          <div className="flex h-full">
+      <main className="h-[calc(100vh-64px)] overflow-hidden bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8">
+          <div className="flex h-full bg-white dark:bg-gray-900 shadow-sm rounded-lg overflow-hidden">
             <div className="w-64 flex-shrink-0">
               <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
             </div>
